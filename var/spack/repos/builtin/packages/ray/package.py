@@ -16,6 +16,14 @@ class Ray(CMakePackage, SourceforgePackage):
 
     depends_on('mpi')
 
+    def patch(self):
+        filter_file(
+            'CMAKE_CXX_COMPILER mpicxx', 
+            'CMAKE_CXX_COMPILER ' + self.spec['mpi'].mpicxx, 
+            'CMakeLists.txt', 
+            string=True
+        )
+
     @run_after('build')
     def make(self):
         mkdirp(prefix.bin)
