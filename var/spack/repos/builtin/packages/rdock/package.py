@@ -19,10 +19,13 @@ class Rdock(Package):
 
     depends_on('popt')
     depends_on('cppunit')
-    depends_on('openbabel', type='run')
+    depends_on('openbabel @3.0.0: +python', type='run')
     depends_on('py-numpy', type='run')
     
-    patch('rdockcommon.patch')
+    patch('rdock_python3.patch')
+    patch('rdock_newcxx.patch')
+    patch('rdock_debug.patch')
+    patch('rdock_loop.patch')
     patch('fjconst.patch', when='%fj')
 
     phases = ['build', 'install']

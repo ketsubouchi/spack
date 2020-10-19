@@ -1,0 +1,105 @@
+diff -u -r -N b/build/test/OccupancyTest.h c/build/test/OccupancyTest.h
+--- b/build/test/OccupancyTest.h	2020-10-19 09:20:56.000000000 +0900
++++ c/build/test/OccupancyTest.h	2020-10-19 09:27:20.000000000 +0900
+@@ -32,7 +32,7 @@
+ CPPUNIT_TEST_SUITE_END();
+ 
+ public:
+-  static const RbtDouble TINY = 1E-4;
++  static constexpr RbtDouble TINY = 1E-4;
+   //TextFixture methods
+   void setUp();
+   void tearDown();
+diff -u -r -N b/build/test/RbtChromTest.h c/build/test/RbtChromTest.h
+--- b/build/test/RbtChromTest.h	2020-10-19 09:20:56.000000000 +0900
++++ c/build/test/RbtChromTest.h	2020-10-19 09:27:20.000000000 +0900
+@@ -68,7 +68,7 @@
+ CPPUNIT_TEST_SUITE_END();
+ 
+ public:
+-  static const RbtDouble TINY = 1E-4;
++  static constexpr RbtDouble TINY = 1E-4;
+   //TextFixture methods
+   void setUp();
+   void tearDown();
+diff -u -r -N b/build/test/SearchTest.h c/build/test/SearchTest.h
+--- b/build/test/SearchTest.h	2020-10-19 09:20:56.000000000 +0900
++++ c/build/test/SearchTest.h	2020-10-19 09:27:20.000000000 +0900
+@@ -33,7 +33,7 @@
+ CPPUNIT_TEST_SUITE_END();
+ 
+ public:
+-  static const RbtDouble TINY = 1E-4;
++  static constexpr RbtDouble TINY = 1E-4;
+   //TextFixture methods
+   void setUp();
+   void tearDown();
+diff -u -r -N b/import/simplex/src/NMSearch.cxx c/import/simplex/src/NMSearch.cxx
+--- b/import/simplex/src/NMSearch.cxx	2020-10-19 09:20:56.000000000 +0900
++++ c/import/simplex/src/NMSearch.cxx	2020-10-19 09:28:09.000000000 +0900
+@@ -388,7 +388,7 @@
+ 
+ void NMSearch::ReadSimplexFile(istream& fp)
+ {
+-   if(fp == NULL) {
++   if(!fp) {
+       cerr<<"No Input Stream in ReadSimplexFile()!\n";
+       return; // There's no file handle!!
+    }
+diff -u -r -N b/import/tnt/include/tnt_sparse_matrix_csr.h c/import/tnt/include/tnt_sparse_matrix_csr.h
+--- b/import/tnt/include/tnt_sparse_matrix_csr.h	2020-10-19 09:20:56.000000000 +0900
++++ c/import/tnt/include/tnt_sparse_matrix_csr.h	2020-10-19 09:28:40.000000000 +0900
+@@ -49,8 +49,8 @@
+ 
+ private:
+ 	Array1D<T>    val_;       // data values (nz_ elements)
+-    Array1D<int>  rowptr_;    // row_ptr (dim_[0]+1 elements)
+-    Array1D<int>  colind_;    // col_ind  (nz_ elements)
++    Array1D<T>  rowptr_;    // row_ptr (dim_[0]+1 elements)
++    Array1D<T>  colind_;    // col_ind  (nz_ elements)
+ 
+     int dim1_;        // number of rows
+     int dim2_;        // number of cols
+diff -u -r -N b/include/RbtAromIdxSF.h c/include/RbtAromIdxSF.h
+--- b/include/RbtAromIdxSF.h	2020-10-19 09:20:56.000000000 +0900
++++ c/include/RbtAromIdxSF.h	2020-10-19 09:30:57.000000000 +0900
+@@ -68,7 +68,7 @@
+   //Generic scoring function params
+   struct f1prms {
+     RbtDouble R0,DRMin,DRMax,slope;
+-    f1prms::f1prms(RbtDouble R, RbtDouble DMin, RbtDouble DMax)
++    f1prms(RbtDouble R, RbtDouble DMin, RbtDouble DMax)
+       : R0(R),DRMin(DMin),DRMax(DMax),slope(1.0/(DMax-DMin)) {};
+   };
+ 
+diff -u -r -N b/include/RbtContainers.h c/include/RbtContainers.h
+--- b/include/RbtContainers.h	2020-10-19 09:20:56.000000000 +0900
++++ c/include/RbtContainers.h	2020-10-19 09:34:12.000000000 +0900
+@@ -34,6 +34,7 @@
+ 
+ #include <algorithm>
+ //DM 9 Dec 1998 - add copy_if template to std namespace (not included in STL)
++#if __cplusplus < 201103L
+ namespace std
+ {
+   template <class InputIterator, class OutputIterator, class Predicate>
+@@ -47,6 +48,7 @@
+     return result;
+   }
+ }
++#endif
+ 
+ // Container Typedefs
+ 	
+diff -u -r -N b/include/RbtPolarSF.h c/include/RbtPolarSF.h
+--- b/include/RbtPolarSF.h	2020-10-19 09:20:56.000000000 +0900
++++ c/include/RbtPolarSF.h	2020-10-19 09:31:57.000000000 +0900
+@@ -78,7 +78,7 @@
+   //Generic scoring function params
+   struct f1prms {
+     RbtDouble R0,DRMin,DRMax,slope;
+-    f1prms::f1prms(RbtDouble R, RbtDouble DMin, RbtDouble DMax)
++    f1prms(RbtDouble R, RbtDouble DMin, RbtDouble DMax)
+       : R0(R),DRMin(DMin),DRMax(DMax),slope(1.0/(DMax-DMin)) {};
+   };
+ 

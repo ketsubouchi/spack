@@ -1,0 +1,45 @@
+diff -u -r -N c/src/exe/rbcavity.cxx d/src/exe/rbcavity.cxx
+--- c/src/exe/rbcavity.cxx	2020-10-19 09:26:40.000000000 +0900
++++ d/src/exe/rbcavity.cxx	2020-10-19 09:40:22.000000000 +0900
+@@ -50,7 +50,7 @@
+ 
+ int main(int argc,const char* argv[])
+ {
+-	char 			c;					// for argument parsing
++	int 			c;					// for argument parsing
+ 	poptContext		optCon;				// ditto
+ 	char 			*prmFile=NULL;		// will be strReceptorPrmFile
+ 	char 			*listDist=NULL;		// will be 'dist' 
+diff -u -r -N c/src/exe/rbdock.cxx d/src/exe/rbdock.cxx
+--- c/src/exe/rbdock.cxx	2020-10-19 09:26:40.000000000 +0900
++++ d/src/exe/rbdock.cxx	2020-10-19 09:40:16.000000000 +0900
+@@ -100,7 +100,7 @@
+ 	RbtInt		iTrace(0);//Trace level, for debugging
+ 
+ 	// variables for popt command-line parsing
+-	char 			c;						// for argument parsing
++	int 			c;						// for argument parsing
+ 	poptContext		optCon;					// ditto
+ 
+ 	char 			*inputFile=NULL;		// will be 'strLigandMdlFile'
+diff -u -r -N c/src/lib/RbtBaseMolecularFileSource.cxx d/src/lib/RbtBaseMolecularFileSource.cxx
+--- c/src/lib/RbtBaseMolecularFileSource.cxx	2020-10-19 09:26:40.000000000 +0900
++++ d/src/lib/RbtBaseMolecularFileSource.cxx	2020-10-19 09:50:06.000000000 +0900
+@@ -410,7 +410,7 @@
+ #endif //_DEBUG
+       return;
+     }
+-    std::remove(atList.begin(), atList.end(),_MANDATORY);
++    atList.erase(std::remove(atList.begin(), atList.end(),_MANDATORY), atList.end());
+   }
+   if (std::find(atList.begin(), atList.end(),_FORBIDDEN) != atList.end()) {
+     RbtString forbidden = spParamSource->GetParameterValueAsString(_FORBIDDEN);
+@@ -424,7 +424,7 @@
+ #endif //_DEBUG
+       return;
+     }
+-    std::remove(atList.begin(), atList.end(),_FORBIDDEN);
++    atList.erase(std::remove(atList.begin(), atList.end(),_FORBIDDEN), atList.end());
+   }
+   
+   for (RbtStringListConstIter aIter = atList.begin(); aIter != atList.end(); aIter++) {
