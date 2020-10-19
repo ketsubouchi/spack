@@ -12,7 +12,7 @@ class Rdock(MakefilePackage):
     that can be used to dock small molecules against proteins and
     nucleic acids. """
 
-    homepage = "https://rdock.sourceforge.net/"
+    homepage = "http://rdock.sourceforge.net/"
     url      = "https://sourceforge.net/projects/rdock/files/rDock_2013.1_src.tar.gz"
 
     version('2013.1', sha256='e716998c3f8a2a70205a8d30ba22675bfdb1764d13c858645138c5eadf2a37e9')
