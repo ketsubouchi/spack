@@ -5,11 +5,11 @@
 
 
 from spack import *
-import os
 
-class Rdock(Package):
-    """rDock is a fast and versatile Open Source docking program 
-    that can be used to dock small molecules against proteins and 
+
+class Rdock(MakefilePackage):
+    """rDock is a fast and versatile Open Source docking program
+    that can be used to dock small molecules against proteins and
     nucleic acids. """
 
     homepage = "https://rdock.sourceforge.net/"
@@ -21,29 +21,29 @@ class Rdock(Package):
     depends_on('cppunit')
     depends_on('openbabel @3.0.0: +python', type='run')
     depends_on('py-numpy', type='run')
-    
+
     patch('rdock_python3.patch')
     patch('rdock_newcxx.patch')
     patch('rdock_debug.patch')
-    patch('rdock_loop.patch')
+    patch('rdock_loop.patch', when='target=aarch64:')
     patch('fjconst.patch', when='%fj')
 
-    phases = ['build', 'install']
-
-    def build(self, spec, prefix):
+    def edit(self, spec, prefix):
         # compiler path
-        mpath = 'build/tmakelib/linux-g++-64/tmake.conf'
+        mpath = join_path('build', 'tmakelib', 'linux-g++-64',
+                          'tmake.conf')
         filter_file('/usr/bin/gcc', spack_cc, mpath, string=True)
         filter_file('/usr/bin/g++', spack_cxx, mpath, string=True)
         # compiler option
-        if not spec.target.family == 'x86_64':
+        if self.spec.target.family == 'aarch64':
             filter_file('-m64', '', mpath, string=True)
+        if not self.spec.satisfies('%gcc'):
             filter_file('-pipe', '', mpath, string=True)
 
-        # build
+    def build(self, spec, prefix):
         with working_dir("build"):
             make('linux-g++-64')
-            #make('linux-g++-64-debug')
+            # make('linux-g++-64-debug')
 
     @run_after('build')
     @on_package_attributes(run_tests=True)
