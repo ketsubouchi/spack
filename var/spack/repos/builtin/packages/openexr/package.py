@@ -39,8 +39,6 @@ class Openexr(AutotoolsPackage):
     depends_on('ilmbase')
     depends_on('zlib', type=('build', 'link'))
 
-    phases = ['configure', 'install']
-
     def configure_args(self):
         spec = self.spec
 
