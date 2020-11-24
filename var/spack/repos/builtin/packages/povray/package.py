@@ -29,12 +29,6 @@ class Povray(AutotoolsPackage):
 
     def configure_args(self):
         configure_args = []
-        configure_args.append('COMPILED_BY=Spack')
+        configure_args.append('COMPILED_BY=Spack' + spack_version)
         configure_args.append('--with-boost-thread=boost_thread-mt')
         return configure_args
-
-    @run_after('build')
-    @on_package_attributes(run_tests=True)
-    def check(self):
-        povexe = Executable(join_path('unix', 'povray'))
-        povexe(join_path('scenes', 'advanced', 'chess2.pov'))
