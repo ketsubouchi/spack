@@ -29,9 +29,24 @@ class Suitesparse(Package):
         if spec.satisfies('%fj'):
             filter_file(
                 r'^F77FLAGS .+',
-                'F77FLAGS = $(FFLAGS) -O0 -X7',
+                'F77FLAGS = $(FFLAGS) -Knoauto -Knoautoobjstack ',
                 c
             )
+            #filter_file(
+                #r'nzmax =.+',
+                #'nzmax = 10000, nmax = 250)',
+                #'UMFPACK/Demo/readhb_nozeros.f'
+            #)
+            #filter_file(
+                #r'nzmax =.+',
+                #'nzmax = 2000, nmax = 250)',
+                #'UMFPACK/Demo/readhb.f'
+            #)
+            #filter_file(
+                #r'nzmax =.+',
+                #'nzmax = 5000, nmax = 1600)',
+                #'UMFPACK/Demo/umf4hb64.f'
+            #)
 
         #  Install PATH
         filter_file(
@@ -87,6 +102,7 @@ class Suitesparse(Package):
         with working_dir("UMFPACK"):
             mkdirp('Demo/tmp')
             make('hb', parallel=False)
+            make('fortran64', parallel=False)
         # Install
         mkdirp(prefix.lib)
         mkdirp(prefix.include)
