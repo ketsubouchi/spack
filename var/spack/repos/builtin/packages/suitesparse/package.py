@@ -6,7 +6,7 @@
 from spack import *
 
 
-class Suitesparse(Package):
+class Suitesparse(MakefilePackage):
     """SuiteSparse: A Suite of Sparse matrix packages"""
 
     homepage = "http://www.suitesparse.com"
@@ -14,39 +14,27 @@ class Suitesparse(Package):
 
     version('master', sha256='62de43ed4ca21cf85de43e1587c0f6fdb67cd6326fcb5cc60b1d58b0f4b112ab')
 
+    variant('fortran', default=False, description="enable fortran support")
+
     depends_on('metis@4.0.3')
     depends_on('blas')
 
-    def install(self, spec, prefix):
+    def edit(self, spec, prefix):
         # patch SuiteSparse_config/SuiteSparse_config.mk
         c = join_path('SuiteSparse_config', 'SuiteSparse_config.mk')
         #  Fortran
-        filter_file(
-            r'^F77 .+',
-            'F77 = {0}'.format(spack_f77),
-            c
-        )
-        if spec.satisfies('%fj'):
+        if '+fortran' in spec:
             filter_file(
-                r'^F77FLAGS .+',
-                'F77FLAGS = $(FFLAGS) -Knoauto -Knoautoobjstack ',
+                r'^F77 .+',
+                'F77 = {0}'.format(spack_f77),
                 c
             )
-            #filter_file(
-                #r'nzmax =.+',
-                #'nzmax = 10000, nmax = 250)',
-                #'UMFPACK/Demo/readhb_nozeros.f'
-            #)
-            #filter_file(
-                #r'nzmax =.+',
-                #'nzmax = 2000, nmax = 250)',
-                #'UMFPACK/Demo/readhb.f'
-            #)
-            #filter_file(
-                #r'nzmax =.+',
-                #'nzmax = 5000, nmax = 1600)',
-                #'UMFPACK/Demo/umf4hb64.f'
-            #)
+            if spec.satisfies('%fj'):
+                filter_file(
+                    r'^F77FLAGS .+',
+                    'F77FLAGS = $(FFLAGS) -Knoauto -Knoautoobjstack ',
+                    c
+                )
 
         #  Install PATH
         filter_file(
@@ -96,14 +84,15 @@ class Suitesparse(Package):
             String=True
         )
 
-        # make
+    def build(self, spec, prefix):
         make()
-        # test UMFPACK
-        with working_dir("UMFPACK"):
-            mkdirp('Demo/tmp')
-            make('hb', parallel=False)
-            make('fortran64', parallel=False)
-        # Install
+        if '+fortran' in spec:
+            with working_dir("UMFPACK"):
+                mkdirp('Demo/tmp')
+                make('hb')
+                make('fortran64')
+
+    def install(self, spec, prefix):
         mkdirp(prefix.lib)
         mkdirp(prefix.include)
         make('install')
