@@ -26,15 +26,42 @@ class Ccaebt(MakefilePackage):
     depends_on('py-pyodbc', type='run')
     # depends on manually installed opam and packages
 
+    def edit(self, spec, prefix):
+        scpath = join_path('cca', 'scripts', 'siteconf.py')
+        copath = join_path('cca', 'ebtutil', 'conf.py')
+        cmpath = join_path('cca', 'ebtutil', 'common.py')
+        vipath = join_path('cca', 'ebtutil', 'virtuoso_ini.py')
+
+        prefixd = join_path(prefix, 'data')
+        prefixv = spec['virtuoso'].prefix
+        filter_file('/opt/cca', prefix, scpath)
+        filter_file('/opt/cca', prefix, copath)
+        filter_file('/var/lib/cca', prefixd, scpath)
+        filter_file('/var/lib/cca', prefixd, copath)
+        filter_file('/opt/virtuoso', prefixv, scpath)
+        filter_file('/opt/virtuoso', prefixv, vipath)
+        filter_file(
+                '\'x\'+uuid4().hex[0:7]',
+                '\'dba\'',
+                cmpath,
+                String = True
+        )
+        
+
     def build(self, spec, prefix):
         with working_dir('./src'):
             make()
 
     def install(self, spec, prefix):
-        install_tree('cca/*', prefix)
-        install_tree('src/ast/analyzing/bin', prefix)
-        install_tree('src/ast/analyzing/etx', prefix)
+        install_tree('cca', prefix)
+        dpath = join_path(prefix, 'bin')
+        mkdirp(dpath)
+        install_tree('src/ast/analyzing/bin', dpath)
+        dpath = join_path(prefix, 'etc')
+        mkdirp(dpath)
+        install_tree('src/ast/analyzing/etc', dpath)
         install('LICENSE', prefix)
-        mpath = join_path(prefix, 'module')
-        mkdirp(mpath)
-        install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', mpath)
+        dpath = join_path(prefix, 'modules')
+        mkdirp(dpath)
+        #install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', dpath)
+        install('LICENSE', dpath)
