@@ -12,10 +12,8 @@ class Virtuoso(AutotoolsPackage):
 
     homepage = "https://github.com/openlink/virtuoso-opensource"
     url      = "https://github.com/openlink/virtuoso-opensource/archive/v7.2.5.1.tar.gz"
-    # url      = "https://github.com/openlink/virtuoso-opensource/archive/develop/7.tar.gz"
 
     version('7.2.5.1', sha256='3e4807e94098b8265f8cf00867d1215bb1e9d0d274878e59a420742d2de471c2')
-    # version('7', sha256='30b58ac00a03c58d1564a001695ab02aede49d4df634f77e84ae08ec9986b9c9')
 
     depends_on('autoconf', type='build')
     depends_on('automake', type='build')
@@ -24,9 +22,10 @@ class Virtuoso(AutotoolsPackage):
 
     depends_on('gperf')
     depends_on('readline')
-    depends_on('openssl@1.0.2u', type=('build', 'link', 'run'))
+    depends_on('openssl@0.9.8:1.1.99', type=('build', 'link', 'run'))
 
     patch('virt_rpc.patch')
+    patch('virt_openssl.patch')
 
     def autoreconf(self, spec, prefix):
         bash = which('bash')

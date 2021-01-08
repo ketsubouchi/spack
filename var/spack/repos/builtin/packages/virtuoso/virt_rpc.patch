@@ -1,5 +1,6 @@
---- a/libsrc/Dk/Dkmarshal.c	2020-12-23 15:53:32.000000000 +0900
-+++ b/libsrc/Dk/Dkmarshal.c	2020-12-23 15:57:40.000000000 +0900
+diff -u -r -N virtuoso-opensource-o/libsrc/Dk/Dkmarshal.c virtuoso-opensource-7/libsrc/Dk/Dkmarshal.c
+--- virtuoso-opensource-o/libsrc/Dk/Dkmarshal.c	2021-01-07 14:22:51.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Dk/Dkmarshal.c	2021-01-07 15:38:11.000000000 +0900
 @@ -31,25 +31,14 @@
  # include <netinet/in.h>			 /* for ntohl, htonl */
  #endif
@@ -29,17 +30,51 @@
  
  macro_char_func readtable[256];
  ses_write_func writetable[256];
---- a/libsrc/Dk.h	2018-08-16 08:06:21.000000000 +0900
-+++ b/libsrc/Dk.h	2020-10-22 18:25:57.000000000 +0900
-@@ -8,7 +8,7 @@
-  *  This file is part of the OpenLink Software Virtuoso Open-Source (VOS)
-  *  project.
-  *  
-- *  Copyright (C) 1998-2018 OpenLink Software
-+ *  Copyright (C) 1998-2020 OpenLink Software
-  *  
-  *  This project is free software; you can redistribute it and/or modify it
-  *  under the terms of the GNU General Public License as published by the
+diff -u -r -N virtuoso-opensource-o/libsrc/Dk/Dksystem.h virtuoso-opensource-7/libsrc/Dk/Dksystem.h
+--- virtuoso-opensource-o/libsrc/Dk/Dksystem.h	2021-01-07 14:22:51.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Dk/Dksystem.h	2021-01-07 15:38:11.000000000 +0900
+@@ -85,7 +85,7 @@
+ #if !defined(__FreeBSD__)
+ #ifdef HAVE_MALLOC_H
+ # include <malloc.h>
+-#else
++#elif !defined (__cplusplus)
+ void *malloc ();
+ void *calloc ();
+ void *realloc ();
+@@ -180,6 +180,14 @@
+ #endif
+ 
+ 
++#ifndef __attribute__
++/* This feature is available in gcc versions 2.5 and later.  */
++# if (! defined __GNUC__ || __GNUC__ < 2 \
++      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5))
++#  define __attribute__(Spec) /* empty */
++# endif
++#endif
++
+ /*
+  *  Easier way of checking GCC version
+  */
+@@ -200,10 +208,14 @@
+ #  define NORETURN		/*NOTHING*/
+ #endif
+ 
++#ifdef __cplusplus
++#define DK_INLINE	inline
++#else
+ #ifdef __GNUC__
+ # define DK_INLINE	__inline__
+ #else
+ # define DK_INLINE
+ #endif
++#endif
+ 
+ #endif
+diff -u -r -N virtuoso-opensource-o/libsrc/Dk.h virtuoso-opensource-7/libsrc/Dk.h
+--- virtuoso-opensource-o/libsrc/Dk.h	2021-01-07 14:22:51.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Dk.h	2021-01-07 15:38:11.000000000 +0900
 @@ -29,6 +29,20 @@
  #ifndef _DK_H
  #define _DK_H	/* libutil needs this name !!! */
@@ -100,3 +135,81 @@
 -#endif
 -
  #endif /* _DK_H */
+diff -u -r -N virtuoso-opensource-o/libsrc/Wi/clcli.c virtuoso-opensource-7/libsrc/Wi/clcli.c
+--- virtuoso-opensource-o/libsrc/Wi/clcli.c	2021-01-07 14:22:52.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Wi/clcli.c	2021-01-07 15:38:11.000000000 +0900
+@@ -420,11 +420,11 @@
+ 	}
+       break;
+     case CLO_DELETE:
+-      if (clo->_.delete.rd)
++      if (clo->_.delete_op.rd)
+ 	{
+-	  if (clo->_.delete.rd->rd_itc)
+-	    itc_free (clo->_.delete.rd->rd_itc);
+-	  rd_free (clo->_.delete.rd);
++	  if (clo->_.delete_op.rd->rd_itc)
++	    itc_free (clo->_.delete_op.rd->rd_itc);
++	  rd_free (clo->_.delete_op.rd);
+ 	}
+       break;
+     case CLO_SELECT:
+diff -u -r -N virtuoso-opensource-o/libsrc/Wi/cldaq.c virtuoso-opensource-7/libsrc/Wi/cldaq.c
+--- virtuoso-opensource-o/libsrc/Wi/cldaq.c	2021-01-07 14:22:52.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Wi/cldaq.c	2021-01-07 15:38:11.000000000 +0900
+@@ -323,7 +323,7 @@
+ 		sqlr_resignal (err);
+ 	      }
+ 	if (CLO_DELETE == clo->clo_op)
+-	  cls_vec_del_rd_layout (clo->_.delete.rd);
++	  cls_vec_del_rd_layout (clo->_.delete_op.rd);
+ 	err = NULL;
+ 	qi->qi_client->cli_non_txn_insert = CLO_INSERT == clo->clo_op && clo->_.insert.non_txn;
+ 	err = cl_vec_exec (qr, qi->qi_client, clrg->clrg_pool, clo->_.insert.rd->rd_values, NULL, QI_NO_SLICE, &set_mask, NULL, 0);
+diff -u -r -N virtuoso-opensource-o/libsrc/Wi/clnode.c virtuoso-opensource-7/libsrc/Wi/clnode.c
+--- virtuoso-opensource-o/libsrc/Wi/clnode.c	2021-01-07 14:22:52.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Wi/clnode.c	2021-01-07 15:38:11.000000000 +0900
+@@ -449,8 +449,8 @@
+       {
+   cl_op_t *clo = clrg_dml_clo (clrg, key, CLO_DELETE);
+   int is_first = 0, fill = 0;
+-  row_delta_t *rd = clo->_.delete.rd;
+-  if (!clo->_.delete.rd->rd_values)
++  row_delta_t *rd = clo->_.delete_op.rd;
++  if (!clo->_.delete_op.rd->rd_values)
+     {
+       state_slot_t col_ssl;
+       memzero (&col_ssl, sizeof (col_ssl));
+@@ -479,7 +479,7 @@
+       END_DO_SET ();
+       is_first = 1;
+     }
+-  rd = clo->_.delete.rd;
++  rd = clo->_.delete_op.rd;
+   fill = 0;
+   DO_SET (dbe_column_t *, col, &key->key_parts)
+   {
+diff -u -r -N virtuoso-opensource-o/libsrc/Wi/cluster.h virtuoso-opensource-7/libsrc/Wi/cluster.h
+--- virtuoso-opensource-o/libsrc/Wi/cluster.h	2021-01-07 14:22:52.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Wi/cluster.h	2021-01-07 15:38:11.000000000 +0900
+@@ -233,7 +233,7 @@
+     {
+       row_delta_t *	rd; /* key and key parts for finding the key to delete, must be first, same as insert  */
+       slice_id_t *	slices;
+-    } delete;
++    } delete_op;
+     struct
+     {
+       query_frag_t *	qf;
+diff -u -r -N virtuoso-opensource-o/libsrc/Wi/wifn.h virtuoso-opensource-7/libsrc/Wi/wifn.h
+--- virtuoso-opensource-o/libsrc/Wi/wifn.h	2021-01-07 14:22:52.000000000 +0900
++++ virtuoso-opensource-7/libsrc/Wi/wifn.h	2021-01-07 15:38:11.000000000 +0900
+@@ -377,7 +377,7 @@
+ /* disk.c */
+ 
+ dbe_storage_t * dbs_open_slice (dbe_storage_t * top_dbs, disk_segment_t * seg, int slice_no, int create);
+-void dbs_slice_close  (cluster_map_t * clm, dbe_storage_t * top_dbs, dbe_storage_t * dbs, int delete);
++void dbs_slice_close  (cluster_map_t * clm, dbe_storage_t * top_dbs, dbe_storage_t * dbs, int unlink_files);
+ void cl_dbs_read_cfg (dbe_storage_t * dbs);
+ void dbs_slice_init (dbe_storage_t * top_dbs, dbe_storage_t * dbs, int exists);
+ int word_free_bit (dp_addr_t w);
