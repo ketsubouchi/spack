@@ -26,10 +26,11 @@ class Ccaebt(MakefilePackage):
     depends_on('py-pyodbc', type='run')
     # depends on manually installed opam and packages
 
+    patch('ccaebt_common.patch')
+
     def edit(self, spec, prefix):
         scpath = join_path('cca', 'scripts', 'siteconf.py')
         copath = join_path('cca', 'ebtutil', 'conf.py')
-        cmpath = join_path('cca', 'ebtutil', 'common.py')
         vipath = join_path('cca', 'ebtutil', 'virtuoso_ini.py')
 
         prefixd = join_path(prefix, 'data')
@@ -40,13 +41,6 @@ class Ccaebt(MakefilePackage):
         filter_file('/var/lib/cca', prefixd, copath)
         filter_file('/opt/virtuoso', prefixv, scpath)
         filter_file('/opt/virtuoso', prefixv, vipath)
-        filter_file(
-                '\'x\'+uuid4().hex[0:7]',
-                '\'dba\'',
-                cmpath,
-                String = True
-        )
-        
 
     def build(self, spec, prefix):
         with working_dir('./src'):
