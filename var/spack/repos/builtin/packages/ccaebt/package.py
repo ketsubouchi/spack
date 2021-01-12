@@ -14,6 +14,8 @@ class Ccaebt(MakefilePackage):
 
     version('1.0', commit='2c71a14c684c67f6125bbcd70248348dadf10994')
 
+    depends_on('gmp')
+
     depends_on('redland-bindings', type='run')
     depends_on('virtuoso', type='run')
 
@@ -44,7 +46,7 @@ class Ccaebt(MakefilePackage):
 
     def build(self, spec, prefix):
         with working_dir('./src'):
-            make()
+            make(parallel=False)
 
     def install(self, spec, prefix):
         install_tree('cca', prefix)
@@ -57,5 +59,4 @@ class Ccaebt(MakefilePackage):
         install('LICENSE', prefix)
         dpath = join_path(prefix, 'modules')
         mkdirp(dpath)
-        #install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', dpath)
-        install('LICENSE', dpath)
+        install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', dpath)
