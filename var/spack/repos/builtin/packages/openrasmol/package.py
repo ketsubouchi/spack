@@ -28,12 +28,17 @@ class Openrasmol(MakefilePackage):
         im = join_path('src', 'Imakefile')
         filter_file('releases-noredirect', 'releases', im)
 
+    def setup_build_environment(self, env):
+        env.set('CBF_DONT_USE_LONG_LONG', '1')
+
     def build(self, spec, prefix):
         with working_dir('src'):
             bash = which('bash')
             bash('./build_all.sh')
 
     def install(self, spec, prefix):
+        install_tree('./data', prefix.sample)
+        install_tree('./doc', prefix.doc)
         with working_dir('src'):
             bash = which('bash')
             bash('./rasmol_install.sh', '--prefix={0}'.format(prefix))
