@@ -16,6 +16,8 @@ class Cqrlib(MakefilePackage):
 
     depends_on('libtool',  type='build')
 
+    patch('cqr.patch')
+
     def edit(self, spec, prefix):
         mf = FileFilter('Makefile')
         mf.filter(r'^CC.+', "CC = {0}".format(spack_cc))
