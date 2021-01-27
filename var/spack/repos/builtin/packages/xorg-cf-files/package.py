@@ -18,3 +18,7 @@ class XorgCfFiles(AutotoolsPackage, XorgPackage):
     version('1.0.6', sha256='6d56094e5d1a6c7d7a9576ac3a0fc2c042344509ea900d59f4b23df668b96c7a')
 
     depends_on('pkgconfig', type='build')
+
+    def patch(self):
+        it = FileFilter('Imake.tmpl')
+        it.filter('CC = CcCmd', "CC = {0}".format(spack_cc))
