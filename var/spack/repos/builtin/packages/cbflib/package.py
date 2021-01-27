@@ -16,6 +16,8 @@ class Cbflib(MakefilePackage):
 
     version('0.9.2', sha256='367e37e1908a65d5472e921150291332823a751206804866e752b793bca17afc')
 
+    depends_on('m4', type='build')
+
     patch('cbf_f16.patch', when='%fj')
     patch('cbf_int.patch', when='target=aarch64:')
 
