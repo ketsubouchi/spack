@@ -16,20 +16,25 @@ class Openrasmol(MakefilePackage):
     version('2.7.5.2', sha256='b975e6e69d5c6b161a81f04840945d2f220ac626245c61bcc6c56181b73a5718')
 
     depends_on('imake', type='build')
-    depends_on('wget', type='build')
-    depends_on('libx11')
-    depends_on('libxpm')
     depends_on('libxext')
     depends_on('libxi')
 
+    depends_on('cbflib')
+    depends_on('cqrlib')
+    depends_on('cvector')
+    depends_on('neartree')
+    depends_on('xforms@1.0.91')
+
     patch('rasmol_noqa.patch')
+    patch('rasmol_imake.patch')
 
     def edit(self, spec, prefix):
-        im = join_path('src', 'Imakefile')
-        filter_file('releases-noredirect', 'releases', im)
-
-    def setup_build_environment(self, env):
-        env.set('CBF_DONT_USE_LONG_LONG', '1')
+        mf = FileFilter(join_path('src', 'Imakefile'))
+        mf.filter('SPACK_XFORMS', spec['xforms'].prefix)
+        mf.filter('SPACK_CBF', spec['cbflib'].prefix)
+        mf.filter('SPACK_CQR', spec['cqrlib'].prefix)
+        mf.filter('SPACK_CVECTOR', spec['cvector'].prefix)
+        mf.filter('SPACK_NEARTREE', spec['neartree'].prefix)
 
     def build(self, spec, prefix):
         with working_dir('src'):
