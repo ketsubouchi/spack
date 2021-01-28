@@ -27,6 +27,7 @@ class Openrasmol(MakefilePackage):
 
     patch('rasmol_noqa.patch')
     patch('rasmol_imake.patch')
+    patch('rasmol_help.patch')
 
     def edit(self, spec, prefix):
         mf = FileFilter(join_path('src', 'Imakefile'))
