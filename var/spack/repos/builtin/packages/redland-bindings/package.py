@@ -19,7 +19,8 @@ class RedlandBindings(AutotoolsPackage):
     depends_on('swig')
     depends_on('redland')
     depends_on('python')
-
+    depends_on('krb5')
+    depends_on('libssh')
     extends('python')
 
     def configure_args(self):

@@ -20,9 +20,11 @@ class Virtuoso(AutotoolsPackage):
     depends_on('libtool',  type='build')
     depends_on('m4',       type='build')
 
+    depends_on('bison', type='build')
+    depends_on('flex', type='build')
     depends_on('gperf')
     depends_on('readline')
-    depends_on('openssl@0.9.8:1.1.99', type=('build', 'link', 'run'))
+    depends_on('openssl@0.9.8:1.1.99')
 
     patch('virt_rpc.patch')
     patch('virt_openssl.patch')
