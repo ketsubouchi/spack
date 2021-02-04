@@ -31,6 +31,7 @@ class ParallelRdock(MakefilePackage):
     patch('rdock_erase.patch')
     patch('rdock_loop.patch', when='target=aarch64:')
     patch('rdock_const.patch', when='%fj')
+    patch('rdock_const2.patch', when='%fj')
 
     def edit(self, spec, prefix):
         # compiler path
