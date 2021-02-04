@@ -88,6 +88,6 @@ class ParallelRdock(MakefilePackage):
 
         opts = []
         opts.append('-n')
-        opts.append("-f'SCORE'")
+        opts.append('-fSCORE')
         opts.append('1sj0_docking_out.sd')
         self.run_test('sdsort', options=opts, work_dir=test_dir)
