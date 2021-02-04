@@ -87,8 +87,11 @@ class ParallelRdock(MakefilePackage):
         opts.extend(['-s', '1'])
         self.run_test(mpiexe, options=opts, work_dir=test_dir)
 
-        opts = []
-        opts.append('-n')
-        opts.append('-fSCORE')
-        opts.append('1sj0_docking_out.sd')
-        self.run_test('sdsort', options=opts, work_dir=test_dir)
+        opts = [join_path(test_dir, 'test.sh')]
+        self.run_test('bash', options=opts, work_dir=test_dir)
+
+        #calculate rmsd from the output comparing with the crystal structure of the ligand
+        pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
+        opts = [join_path(self.spec.prefix.bin, 'sdrmsd')]
+        opts.extend(['1sj0_ligand.sd', '1sj0_docking_out_sorted.sd'])
+        self.run_test(pythonexe, options=opts, work_dir=test_dir)
