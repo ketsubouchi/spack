@@ -25,6 +25,7 @@ class ParallelRdock(MakefilePackage):
     depends_on('py-numpy', type='run')
     depends_on('mpi')
 
+    patch('rdock_ld.patch')
     patch('rdock_python3.patch')
     patch('rdock_newcxx.patch')
     patch('rdock_useint.patch')
