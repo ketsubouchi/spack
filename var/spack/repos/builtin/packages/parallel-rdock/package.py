@@ -1,4 +1,4 @@
-# Copyright 2013-2020 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2021 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -37,20 +37,19 @@ class ParallelRdock(MakefilePackage):
 
     def edit(self, spec, prefix):
         # compiler path
-        mpath = join_path('build', 'tmakelib', 'linux-g++-64',
-                          'tmake.conf')
-        filter_file('/usr/bin/gcc', spack_cc, mpath, string=True)
-        filter_file('mpicxx', self.spec['mpi'].mpicxx, mpath, string=True)
+        tm = FileFilter(join_path('build', 'tmakelib', 'linux-g++-64',
+                        'tmake.conf'))
+        tm.filter('/usr/bin/gcc', spack_cc)
+        tm.filter('mpicxx', self.spec['mpi'].mpicxx)
         # compiler option
         if self.spec.target.family == 'aarch64':
-            filter_file('-m64', '', mpath, string=True)
+            tm.filter('-m64', '')
         if not self.spec.satisfies('%gcc'):
-            filter_file('-pipe', '', mpath, string=True)
+            tm.filter('-pipe', '')
 
     def build(self, spec, prefix):
         with working_dir("build"):
             make('linux-g++-64')
-            # make('linux-g++-64-debug')
 
     @run_after('build')
     @on_package_attributes(run_tests=True)
@@ -91,8 +90,6 @@ class ParallelRdock(MakefilePackage):
         opts = [join_path(test_dir, 'test.sh')]
         self.run_test('bash', options=opts, work_dir=test_dir)
 
-        # calculate rmsd from the output comparing with
-        # the crystal structure of the ligand
         pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
         opts = [join_path(self.spec.prefix.bin, 'sdrmsd')]
         opts.extend(['1sj0_ligand.sd', '1sj0_docking_out_sorted.sd'])
