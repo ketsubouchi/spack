@@ -8,6 +8,7 @@ from spack import *
 import os
 import glob
 
+
 class ParallelRdock(MakefilePackage):
     """rDock is a fast and versatile Open Source docking program
     that can be used to dock small molecules against proteins and
@@ -90,8 +91,11 @@ class ParallelRdock(MakefilePackage):
         opts = [join_path(test_dir, 'test.sh')]
         self.run_test('bash', options=opts, work_dir=test_dir)
 
-        #calculate rmsd from the output comparing with the crystal structure of the ligand
+        # calculate rmsd from the output comparing with
+        # the crystal structure of the ligand
         pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
         opts = [join_path(self.spec.prefix.bin, 'sdrmsd')]
         opts.extend(['1sj0_ligand.sd', '1sj0_docking_out_sorted.sd'])
-        self.run_test(pythonexe, options=opts, work_dir=test_dir)
+        expected = ['10\t6.72']
+        self.run_test(pythonexe, options=opts, expected=expected,
+                      work_dir=test_dir)
