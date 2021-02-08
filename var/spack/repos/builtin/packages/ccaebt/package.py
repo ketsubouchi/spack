@@ -63,3 +63,14 @@ class Ccaebt(MakefilePackage):
         install('src/ast/analyzing/langs/astml/Mastml_p.cmxs', dpath)
         install('src/ast/analyzing/langs/cpp/Mcpp_p.cmxs', dpath)
         install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', dpath)
+
+    def test(self):
+        test_dir = self.test_suite.current_test_data_dir
+        pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
+        pypath = join_path(self.spec.prefix.ebtutil, 'outline.py')
+        # C
+        opts = [pypath, join_path(test_dir, 'ctest')]
+        self.run_test(pythonexe, options=opts)
+        # Fortran
+        opts = [pypath, join_path(test_dir, 'ftest')]
+        self.run_test(pythonexe, options=opts)
