@@ -70,7 +70,13 @@ class Ccaebt(MakefilePackage):
         pypath = join_path(self.spec.prefix.ebtutil, 'outline.py')
         # C
         opts = [pypath, join_path(test_dir, 'ctest')]
-        self.run_test(pythonexe, options=opts)
-        # Fortran
+        expected = ['rsdft: 0.532741']
+        self.run_test(pythonexe, options=opts, expected=expected)
+        # Fortran77
         opts = [pypath, join_path(test_dir, 'ftest')]
-        self.run_test(pythonexe, options=opts)
+        expected = ['rsdft: 0.613510']
+        self.run_test(pythonexe, options=opts, expected=expected)
+        # Fortran90
+        opts = [pypath, join_path(test_dir, 'f90')]
+        expected = ['rsdft: 0.613510']
+        self.run_test(pythonexe, options=opts, expected=expected)
