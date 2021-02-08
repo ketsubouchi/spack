@@ -77,11 +77,10 @@ class ParallelRdock(MakefilePackage):
 
         opts = []
         mpiexe = self.spec['mpi'].prefix.bin.mpirun
-        opts.extend(['-n', '1'])
         opts.append(join_path(self.prefix.bin, 'rbdock'))
         opts.extend(['-r', '1sj0_rdock.prm'])
         opts.extend(['-p', 'dock.prm'])
-        opts.extend(['-n', '10'])
+        opts.extend(['-n', '100'])
         opts.extend(['-i', '1sj0_ligand.sd'])
         opts.extend(['-o', '1sj0_docking_out'])
         opts.extend(['-s', '1'])
@@ -93,6 +92,6 @@ class ParallelRdock(MakefilePackage):
         pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
         opts = [join_path(self.spec.prefix.bin, 'sdrmsd')]
         opts.extend(['1sj0_ligand.sd', '1sj0_docking_out_sorted.sd'])
-        expected = ['10\t6.72']
+        expected = ['1\t0.55', '100\t7.91']
         self.run_test(pythonexe, options=opts, expected=expected,
                       work_dir=test_dir)
