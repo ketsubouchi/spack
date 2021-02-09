@@ -64,23 +64,18 @@ class ParallelRdock(MakefilePackage):
         opts = ['-r', '1sj0_rdock.prm', '-was']
         self.run_test('rbcavity', options=opts, work_dir=test_dir)
 
-        opts = []
         mpiexe = self.spec['mpi'].prefix.bin.mpirun
-        opts.append(join_path(self.prefix.bin, 'rbdock'))
-        opts.extend(['-r', '1sj0_rdock.prm'])
-        opts.extend(['-p', 'dock.prm'])
-        opts.extend(['-n', '100'])
-        opts.extend(['-i', '1sj0_ligand.sd'])
-        opts.extend(['-o', '1sj0_docking_out'])
-        opts.extend(['-s', '1'])
+        opts = [self.prefix.bin.rbdock, '-r', '1sj0_rdock.prm',
+                '-p', 'dock.prm', '-n', '100', '-i', '1sj0_ligand.sd',
+                '-o', '1sj0_docking_out', '-s', '1']
         self.run_test(mpiexe, options=opts, work_dir=test_dir)
 
         opts = [join_path(test_dir, 'test.sh')]
         self.run_test('bash', options=opts, work_dir=test_dir)
 
-        pythonexe = join_path(self.spec['python'].prefix.bin, 'python')
-        opts = [join_path(self.spec.prefix.bin, 'sdrmsd')]
-        opts.extend(['1sj0_ligand.sd', '1sj0_docking_out_sorted.sd'])
+        pythonexe = self.spec['python'].command.path
+        opts = [self.spec.prefix.bin.sdrmsd,
+                '1sj0_ligand.sd', '1sj0_docking_out_sorted.sd']
         expected = ['1\t0.55', '100\t7.91']
         self.run_test(pythonexe, options=opts, expected=expected,
                       work_dir=test_dir)
