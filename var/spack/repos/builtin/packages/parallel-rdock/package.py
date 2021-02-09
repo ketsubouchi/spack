@@ -6,7 +6,6 @@
 
 from spack import *
 import os
-import glob
 
 
 class ParallelRdock(MakefilePackage):
@@ -27,7 +26,7 @@ class ParallelRdock(MakefilePackage):
     depends_on('mpi')
 
     patch('rdock_ld.patch')
-    patch('rdock_python3.patch')
+    patch('rdock_python3.patch', when='^python@3:')
     patch('rdock_newcxx.patch')
     patch('rdock_useint.patch')
     patch('rdock_erase.patch')
@@ -51,18 +50,10 @@ class ParallelRdock(MakefilePackage):
         with working_dir("build"):
             make('linux-g++-64')
 
-    @run_after('build')
-    @on_package_attributes(run_tests=True)
-    def check_build(self):
-        with working_dir("build"):
-            make('test', parallel=False)
-
     def install(self, spec, prefix):
+        for shfile in find('bin', '*'):
+            set_executable(shfile)
         install_tree('.', prefix)
-        chmod = which('chmod')
-        bin_files = glob.glob(join_path(prefix.bin, "*"))
-        for bf in bin_files:
-            chmod('+x', bf)
 
     def setup_run_environment(self, env):
         env.set('RBT_ROOT', self.prefix)
@@ -70,9 +61,7 @@ class ParallelRdock(MakefilePackage):
     def test(self):
         test_dir = self.test_suite.current_test_data_dir
         copy(join_path(self.prefix.example, '1sj0', '*'), test_dir)
-        opts = []
-        opts.extend(['-r', '1sj0_rdock.prm'])
-        opts.append('-was')
+        opts = ['-r', '1sj0_rdock.prm', '-was']
         self.run_test('rbcavity', options=opts, work_dir=test_dir)
 
         opts = []
