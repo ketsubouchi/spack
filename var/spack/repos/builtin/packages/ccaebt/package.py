@@ -50,18 +50,18 @@ class Ccaebt(MakefilePackage):
             make(parallel=False)
 
     def install(self, spec, prefix):
+        spath = join_path('src', 'ast', 'analyzing')
         install_tree('cca', prefix)
         mkdirp(prefix.bin)
-        install_tree('src/ast/analyzing/bin', prefix.bin)
+        install_tree(join_path(spath, 'bin'), prefix.bin)
         mkdirp(prefix.etc)
-        install_tree('src/ast/analyzing/etc', prefix.etc)
+        install_tree(join_path(spath, 'etc'), prefix.etc)
         install('LICENSE', prefix)
         dpath = prefix.modules
         mkdirp(dpath)
-        spath = join_path('src', 'ast', 'analyzing', 'langs')
-        install(join_path(spath, 'astml', 'Mastml_p.cmxs'), dpath)
-        install(join_path(spath, 'cpp', 'Mcpp_p.cmxs'), dpath)
-        install(join_path(spath, 'fortran', 'Mfortran_p.cmxs'), dpath)
+        install(join_path(spath, 'langs', 'astml', 'Mastml_p.cmxs'), dpath)
+        install(join_path(spath, 'langs', 'cpp', 'Mcpp_p.cmxs'), dpath)
+        install(join_path(spath, 'langs', 'fortran', 'Mfortran_p.cmxs'), dpath)
 
     def test(self):
         test_dir = self.test_suite.current_test_data_dir
