@@ -36,7 +36,7 @@ class Ccaebt(MakefilePackage):
         copath = join_path('cca', 'ebtutil', 'conf.py')
         vipath = join_path('cca', 'ebtutil', 'virtuoso_ini.py')
 
-        prefixd = join_path(prefix, 'data')
+        prefixd = prefix.data
         prefixv = spec['virtuoso'].prefix
         filter_file('/opt/cca', prefix, scpath)
         filter_file('/opt/cca', prefix, copath)
@@ -46,23 +46,22 @@ class Ccaebt(MakefilePackage):
         filter_file('/opt/virtuoso', prefixv, vipath)
 
     def build(self, spec, prefix):
-        with working_dir('./src'):
+        with working_dir('src'):
             make(parallel=False)
 
     def install(self, spec, prefix):
         install_tree('cca', prefix)
-        dpath = join_path(prefix, 'bin')
-        mkdirp(dpath)
-        install_tree('src/ast/analyzing/bin', dpath)
-        dpath = join_path(prefix, 'etc')
-        mkdirp(dpath)
-        install_tree('src/ast/analyzing/etc', dpath)
+        mkdirp(prefix.bin)
+        install_tree('src/ast/analyzing/bin', prefix.bin)
+        mkdirp(prefix.etc)
+        install_tree('src/ast/analyzing/etc', prefix.etc)
         install('LICENSE', prefix)
-        dpath = join_path(prefix, 'modules')
+        dpath = prefix.modules
         mkdirp(dpath)
-        install('src/ast/analyzing/langs/astml/Mastml_p.cmxs', dpath)
-        install('src/ast/analyzing/langs/cpp/Mcpp_p.cmxs', dpath)
-        install('src/ast/analyzing/langs/fortran/Mfortran_p.cmxs', dpath)
+        spath = join_path('src', 'ast', 'analyzing', 'langs')
+        install(join_path(spath, 'astml', 'Mastml_p.cmxs'), dpath)
+        install(join_path(spath, 'cpp', 'Mcpp_p.cmxs'), dpath)
+        install(join_path(spath, 'fortran', 'Mfortran_p.cmxs'), dpath)
 
     def test(self):
         test_dir = self.test_suite.current_test_data_dir
