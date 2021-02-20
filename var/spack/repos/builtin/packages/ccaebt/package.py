@@ -32,22 +32,21 @@ class Ccaebt(MakefilePackage):
     patch('ccaebt_common.patch')
 
     def edit(self, spec, prefix):
-        scpath = join_path('cca', 'scripts', 'siteconf.py')
-        copath = join_path('cca', 'ebtutil', 'conf.py')
-        vipath = join_path('cca', 'ebtutil', 'virtuoso_ini.py')
-
+        paths = [join_path('cca', 'scripts', 'siteconf.py'),
+                 join_path('cca', 'ebtutil', 'conf.py'),
+                 join_path('cca', 'ebtutil', 'virtuoso_ini.py')
+                 ]
         prefixd = prefix.data
         prefixv = spec['virtuoso'].prefix
-        filter_file('/opt/cca', prefix, scpath)
-        filter_file('/opt/cca', prefix, copath)
-        filter_file('/var/lib/cca', prefixd, scpath)
-        filter_file('/var/lib/cca', prefixd, copath)
-        filter_file('/opt/virtuoso', prefixv, scpath)
-        filter_file('/opt/virtuoso', prefixv, vipath)
+        for x in paths:
+            filter_file('/opt/cca', prefix, x)
+            filter_file('/var/lib/cca', prefixd, x)
+            filter_file('/opt/virtuoso', prefixv, x)
 
     def build(self, spec, prefix):
-        with working_dir('src'):
-            make(parallel=False)
+        copy(join_path(os.path.dirname(__file__), "build.sh"), ".")
+        bash = which('bash')
+        bash('./build.sh')
 
     def install(self, spec, prefix):
         spath = join_path('src', 'ast', 'analyzing')
