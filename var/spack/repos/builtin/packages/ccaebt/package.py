@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 from spack import *
+import os
 
 
 class Ccaebt(MakefilePackage):
@@ -14,6 +15,7 @@ class Ccaebt(MakefilePackage):
 
     version('1.0', commit='2c71a14c684c67f6125bbcd70248348dadf10994')
 
+    depends_on('m4')
     depends_on('gmp')
     depends_on('zlib')
 

@@ -29,7 +29,7 @@ make install
 # 3.ocaml (for packages)
 export PATH=$PATH:$WORKDIR/opam/bin
 export OPAMROOT=$WORKDIR/work
-#export OPAMROOT=/tmp
+#export OPAMROOT=/tmp/opam
 #OPAMROOT must be shorter than 38 bytes
 opam init --disable-sandboxing --disable-completion --no-setup --bare
 opam switch create ocaml-base-compiler.4.11.1
