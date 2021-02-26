@@ -45,6 +45,11 @@ class Ccaebt(MakefilePackage):
             filter_file('/var/lib/cca', prefixd, x)
             filter_file('/opt/virtuoso', prefixv, x)
 
+    def setup_build_environment(self, env):
+        if self.spec.satisfies('%fj'):
+            env.set('ASPP', '{0} -c'.format(spack_cc))
+            env.set('AS', 'as')
+
     def build(self, spec, prefix):
         copy(join_path(os.path.dirname(__file__), "build.sh"), ".")
         bash = which('bash')
