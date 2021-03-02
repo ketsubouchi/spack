@@ -26,6 +26,11 @@ class Dsqss(CMakePackage):
     depends_on('py-scipy', type=('build', 'run'))
     depends_on('py-toml', type=('build', 'run'))
 
+    depends_on('py-setuptools', type='build')
+    depends_on('py-pip', type='build')
+    depends_on('py-wheel', type='build')
+
+    patch('spackpip.patch')
     patch('ctest.patch')
 
     extends('python')
