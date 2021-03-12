@@ -16,7 +16,6 @@ class FujitsuMpi(Package):
     conflicts('%cce')
     conflicts('%apple-clang')
     conflicts('%clang')
-    conflicts('%gcc')
     conflicts('%intel')
     conflicts('%nag')
     conflicts('%pgi')
@@ -48,10 +47,16 @@ class FujitsuMpi(Package):
         )
 
     def setup_dependent_package(self, module, dependent_spec):
-        self.spec.mpicc = self.prefix.bin.mpifcc
-        self.spec.mpicxx = self.prefix.bin.mpiFCC
-        self.spec.mpif77 = self.prefix.bin.mpifrt
-        self.spec.mpifc = self.prefix.bin.mpifrt
+        if self.spec.satisfies('%fj'):
+            self.spec.mpicc = self.prefix.bin.mpifcc
+            self.spec.mpicxx = self.prefix.bin.mpiFCC
+            self.spec.mpif77 = self.prefix.bin.mpifrt
+            self.spec.mpifc = self.prefix.bin.mpifrt
+        if self.spec.satisfies('%gcc'):
+            self.spec.mpicc = self.prefix.bin.mpicc
+            self.spec.mpicxx = self.prefix.bin.mpicxx
+            self.spec.mpif77 = self.prefix.bin.mpifort
+            self.spec.mpifc = self.prefix.bin.mpifort
 
     def setup_dependent_build_environment(self, env, dependent_spec):
         self.setup_run_environment(env)
@@ -59,7 +64,13 @@ class FujitsuMpi(Package):
     def setup_run_environment(self, env):
         # Because MPI are both compilers and runtimes, we set up the compilers
         # as part of run environment
-        env.set('MPICC', self.prefix.bin.mpifcc)
-        env.set('MPICXX', self.prefix.bin.mpiFCC)
-        env.set('MPIF77', self.prefix.bin.mpifrt)
-        env.set('MPIF90', self.prefix.bin.mpifrt)
+        if self.spec.satisfies('%fj'):
+            env.set('MPICC', self.prefix.bin.mpifcc)
+            env.set('MPICXX', self.prefix.bin.mpiFCC)
+            env.set('MPIF77', self.prefix.bin.mpifrt)
+            env.set('MPIF90', self.prefix.bin.mpifrt)
+        if self.spec.satisfies('%gcc'):
+            env.set('MPICC', self.prefix.bin.mpicc)
+            env.set('MPICXX', self.prefix.bin.mpicxx)
+            env.set('MPIF77', self.prefix.bin.mpifort)
+            env.set('MPIF90', self.prefix.bin.mpifort)
